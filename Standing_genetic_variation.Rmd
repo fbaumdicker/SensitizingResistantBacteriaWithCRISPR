@@ -1,0 +1,102 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+
+```{r setup, include = FALSE}
+library(reticulate)
+library(stats)
+library(extraDistr)
+
+
+# use_python(Sys.which("python"))
+virtualenv_create("standing_genetic_variation")
+# py_install("numpy", envname = "standing_genetic_variation")
+# py_install("scipy", envname = "standing_genetic_variation")
+use_virtualenv("standing_genetic_variation")
+
+```
+
+```{python, echo = FALSE}
+import numpy as np
+from scipy.stats import hypergeom
+from scipy.integrate import solve_ivp
+# parameters:
+# v: Mutation probability,
+# n: Plasmid copy number,
+# s: fitness parameter,
+# SGV_Type: Type of dominance function of the mutation
+def celltypefrequencies(v,n,s,SGV_Type):
+    n = int(n)
+  
+    # define function for the coefficient p_k^i
+    def p(k,i):
+        return hypergeom(2*n, 2*i, n).pmf(k)*(2-(k==i))
+    # define dictionary for array of replication rates Lambda
+    lDic={
+        "dominant" : np.array([1.-(i!=0)*s for i in range(n+1)]),
+        "recessive" : np.array([1.-(i==n)*s for i in range(n+1)]),
+        "linear" : np.array([1.-i/n*s for i in range(n+1)]),
+        #"GDE" : np.array([1.-i*s for i in range(n+1)]),
+    }
+    l=lDic[SGV_Type] # define array for replication rates Lambda
+    # define Matrix M_1
+    M1=np.array([[ l[k]*p(i,k)-l[i]*(1-p(i,i))*(i==k) \
+                   for k in range(n+1)] for i in range(n+1)])
+    # define vector e_{01}
+    e01=np.zeros(n+1)
+    e01[0]=-1.
+    e01[1]=1.
+    # define function for M_2
+    def M2(X):
+        return np.outer(X,l)
+    # define function f (right side of ODE)
+    def f(t,X):
+        # direct implementation of Eq. C.5-C.7
+        
+        # dXdt=np.zeros(n+1)
+        # for i in range(n+1):
+        #     for k in range(n+1):
+        #         dXdt[i]+=l[k]*X[k]*(p(i,k)-X[i])
+        #     dXdt[i]+=l[i]*X[i]*(p(i,i)-1)
+        #     if i==0:
+        #         dXdt[i]-=l[0]*X[0]*n*v
+        #     elif i==1:
+        #         dXdt[i]+=l[0]*X[0]*n*v
+        # return dXdt
+        
+        # reformulation into matrix equation (see README.md)
+        return (M1-M2(X))@X +e01*l[0]*X[0]*n*v
+
+    # define the initial state X0
+    X0=np.zeros(n+1)
+    X0[0]=1.
+    # define function to check if system is in equilibrium
+    def equilibrium (t,X):
+        return np.max(np.abs(f(t,X)))-1e-15
+    equilibrium.terminal=True # stop integration at equilibrium
+    # set maximum time of integration
+    tmax=1e12
+    # integrate system and throw raise exception when equilibrium
+    # was not found
+    sol=solve_ivp(f,[0,tmax],X0,events=[equilibrium],\
+                  method='Radau',rtol=1e-5,atol=1e-15)
+    if len(sol.t_events[0])==0:
+        raise Exception('Equilibrium not found. Increase tmax')
+    return sol.y.T[-1]
+
+```
+
+
+```{r}
+
+### Rework Santer's and Uecker's result for the usage in R:
+
+celltypefrequencies_R <- function(v,n,s,SGV_Type) {
+  standing_genetic_variation <- as.vector(py$celltypefrequencies(v,n,s,SGV_Type))
+  return(c(standing_genetic_variation[2:(n+1)],standing_genetic_variation[1]))
+}
+
+```

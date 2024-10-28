@@ -55,14 +55,14 @@ probability_generating_function <- function(Q_input, CRISPR_type, cell_division_
 
 # Variables:
 ### observed_copy_numbers: The observed copy numbers n.
-### s_max: The maximum fitness.
-### s_0: The minimum fitness.
+### lambda_max: The maximum fitness.
+### lambda_min: The minimum fitness.
 ### dominance_function: The fitness function (dominant, recessive or linear).
 ### CRISPR_type: The CRISPR type and the incompatability group.
 ### cell_division_calculated: Probabilities for each combination of daughter cells.
 ### numerical_approximation_threshold: The numerical approximation runs until the change in value is less than this parameter.
 
-numerical_establishment_probabilities <- function(observed_copy_numbers, s_max, s_0, dominance_function, CRISPR_type, cell_division_calculated, numerical_approximation_threshold) {
+numerical_establishment_probabilities <- function(observed_copy_numbers, lambda_max, lambda_min, dominance_function, CRISPR_type, cell_division_calculated, numerical_approximation_threshold) {
   
   computation_result <- list()
   
@@ -72,7 +72,7 @@ numerical_establishment_probabilities <- function(observed_copy_numbers, s_max, 
     
     n <- observed_copy_numbers[j]
     
-    birth_death_parameter <- birth_death_parameters(n, s_max, CRISPR_type, dominance_function, s_0)
+    birth_death_parameter <- birth_death_parameters(n, lambda_max, CRISPR_type, dominance_function, lambda_min)
     lambda <- birth_death_parameter[[1]]
     mu <- birth_death_parameter[[2]]
     

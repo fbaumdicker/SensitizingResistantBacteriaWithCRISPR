@@ -1,5 +1,5 @@
 
-main <- function(used_cases, observed_copy_numbers, u, dominance_function, number_of_mutations_at_start, type_plasmid_duplication, numerical_number_of_repeats, v, s_max, s_0, SGV_Type, population_size, competition_ABR_plasmid, competition_CRISPR_plasmid, numerical_approximation_threshold) {
+main <- function(used_cases, observed_copy_numbers, u, dominance_function, number_of_mutations_at_start, type_plasmid_duplication, numerical_number_of_repeats, v, lambda_max, lambda_min, SGV_Type, population_size, competition_ABR_plasmid, competition_CRISPR_plasmid, numerical_approximation_threshold) {
   
   # Packages needed:
   
@@ -44,7 +44,7 @@ main <- function(used_cases, observed_copy_numbers, u, dominance_function, numbe
     
     # Calculate the cell division probabilities:
     
-    cell_division_calculated_case <- cell_division_plasmid_probabilities(CRISPR_type, observed_copy_numbers, type_plasmid_duplication, dominance_function, competition_ABR_plasmid, competition_CRISPR_plasmid, s_max, s_0, u)
+    cell_division_calculated_case <- cell_division_plasmid_probabilities(CRISPR_type, observed_copy_numbers, type_plasmid_duplication, dominance_function, competition_ABR_plasmid, competition_CRISPR_plasmid, lambda_max, lambda_min, u)
     
     print(cell_division_calculated_case)
     cell_division_calculated[[length(cell_division_calculated) + 1]] <- cell_division_calculated_case
@@ -53,7 +53,7 @@ main <- function(used_cases, observed_copy_numbers, u, dominance_function, numbe
     
     numerical_probabilities_case <- list()
     
-    numerical_probabilities_case <- numerical_establishment_probabilities(observed_copy_numbers, s_max, s_0, dominance_function, CRISPR_type, cell_division_calculated_case, numerical_approximation_threshold)
+    numerical_probabilities_case <- numerical_establishment_probabilities(observed_copy_numbers, lambda_max, lambda_min, dominance_function, CRISPR_type, cell_division_calculated_case, numerical_approximation_threshold)
     
     numerical_probabilities[[length(numerical_probabilities) + 1]] <- numerical_probabilities_case
     
@@ -72,7 +72,7 @@ main <- function(used_cases, observed_copy_numbers, u, dominance_function, numbe
       
       # Distribution of the first generation after pCRISPR introduction:
       
-      first_generation_probabilities_calculated <- first_generation_probabilities(number_of_mutations_at_start, n, CRISPR_type, type_plasmid_duplication, s_max, s_0, u, dominance_function, competition_CRISPR_plasmid, competition_ABR_plasmid)
+      first_generation_probabilities_calculated <- first_generation_probabilities(number_of_mutations_at_start, n, CRISPR_type, type_plasmid_duplication, lambda_max, lambda_min, u, dominance_function, competition_CRISPR_plasmid, competition_ABR_plasmid)
       
       # Numerical calculation of the establishment probability:
       
@@ -96,7 +96,7 @@ main <- function(used_cases, observed_copy_numbers, u, dominance_function, numbe
       } else if (CRISPR_type == "Compatible Cleaving") {
         
         if (number_of_mutations_at_start > 0) {
-          rescue_probability_numerical_case[j] <- numerical_probabilities_case[[j]][n] # = 1 / (1 + s_max)
+          rescue_probability_numerical_case[j] <- numerical_probabilities_case[[j]][n] # = 1 / (1 + lambda_max)
         } else {
           rescue_probability_numerical_case[j] <- 0
         }
@@ -137,7 +137,7 @@ main <- function(used_cases, observed_copy_numbers, u, dominance_function, numbe
       for (number_of_mutations in 1:(n+1)) {
         
         first_generation_probabilities_SGV_calculated <- 
-          first_generation_probabilities(number_of_mutations, n, CRISPR_type, type_plasmid_duplication, s_max, s_0, u, dominance_function, competition_CRISPR_plasmid, competition_ABR_plasmid)
+          first_generation_probabilities(number_of_mutations, n, CRISPR_type, type_plasmid_duplication, lambda_max, lambda_min, u, dominance_function, competition_CRISPR_plasmid, competition_ABR_plasmid)
         
         if (CRISPR_type == "Incompatible Silencing" || CRISPR_type == "Incompatible No Effect") {
           
@@ -172,7 +172,7 @@ main <- function(used_cases, observed_copy_numbers, u, dominance_function, numbe
       rescue_probability_de_novo[[length(rescue_probability_de_novo)+1]] <- rep(0, length(observed_copy_numbers))
       
       for (k in 1:length(observed_copy_numbers)) {
-        birth_death_parameter <- birth_death_parameters(observed_copy_numbers[k], s_max, CRISPR_type, dominance_function, s_0)
+        birth_death_parameter <- birth_death_parameters(observed_copy_numbers[k], lambda_max, CRISPR_type, dominance_function, lambda_min)
         lambda <- birth_death_parameter[[1]]
         mu <- birth_death_parameter[[2]]
         

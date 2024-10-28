@@ -8,8 +8,6 @@ s <- 0.1
 SGV_Type <- "linear"
 observed_copy_numbers_supplement <- c(10,20,40)
 type_plasmid_duplication <- "random"
-s_max <- 0
-s_0 <- 0
 u <- 0
 dominance_function <- "linear"
 
@@ -48,7 +46,7 @@ for (i in 1:length(observed_copy_numbers_supplement)) {
  
 ggplot(SGV_supplement, aes(x = Number_of_pAMRmut, y = Frequency, fill = factor(Copy_Number))) +
     geom_bar(stat = "identity", position = "dodge") +
-    labs(title = "Standing genetic variation for increasing copy numbers", y = "Cell type frequency", x = "Fraction of mutated AMR plasmids") +
+    labs(title = "Standing genetic variation for various copy numbers", y = "Cell type frequency", x = "Fraction of mutated AMR plasmid copies") +
     scale_fill_manual(name = bquote("Copy numbers:"), values = c("blue4", "cornflowerblue", "aquamarine1"), labels = c("n = 10", "n = 20", "n = 40")) +
     theme(axis.line = element_line(color='black'),
           plot.background = element_blank(),

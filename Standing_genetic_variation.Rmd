@@ -16,6 +16,7 @@ virtualenv_create("standing_genetic_variation")
 # py_install("numpy", envname = "standing_genetic_variation")
 # py_install("scipy", envname = "standing_genetic_variation")
 use_virtualenv("standing_genetic_variation")
+# unlink("~/.virtualenvs/standing_genetic_variation", recursive = TRUE)
 
 ```
 

@@ -14,7 +14,6 @@ type_plasmid_duplication <- "random"
 dominance_function <- "linear"
 SGV_Type <- "linear"
 u <- 0
-treshhold <- 0.5
 numerical_approximation_threshold <- 10^-10
 used_cases <- 1:6
 competition_ABR_plasmid <- 0
@@ -22,11 +21,11 @@ competition_CRISPR_plasmid <- 0
 
 # Default cases
 
-s_max <- 0.05
+lambda_max <- 0.05
 v <- 10^-8
 s <- 0.1
 population_size <- 10^7
-s_0 <- 0.05
+lambda_min <- 0.05
 
 
 ###### Start:
@@ -51,7 +50,7 @@ directory <- gsub(" ", "", paste(directory, "/"))
 
 number_of_mutations_at_start <- 0
 
-main_result_wild_type <- main(used_cases, observed_copy_numbers, u, dominance_function, number_of_mutations_at_start, type_plasmid_duplication, numerical_number_of_repeats, v, s_max, s_0, SGV_Type, population_size, competition_ABR_plasmid, competition_CRISPR_plasmid, numerical_approximation_threshold)
+main_result_wild_type <- main(used_cases, observed_copy_numbers, u, dominance_function, number_of_mutations_at_start, type_plasmid_duplication, numerical_number_of_repeats, v, lambda_max, lambda_min, SGV_Type, population_size, competition_ABR_plasmid, competition_CRISPR_plasmid, numerical_approximation_threshold)
 
 extermination_probability <- main_result_wild_type[[1]]
 
@@ -164,7 +163,7 @@ ggsave(file = file,  units="px", width = 7200, height=4800, dpi = 600, bg = "whi
 
 number_of_mutations_at_start <- 1
 
-main_result_single_cell <- main(used_cases, observed_copy_numbers, u, dominance_function, number_of_mutations_at_start, type_plasmid_duplication, numerical_number_of_repeats, v, s_max, s_0, SGV_Type, population_size, competition_ABR_plasmid, competition_CRISPR_plasmid, numerical_approximation_threshold)
+main_result_single_cell <- main(used_cases, observed_copy_numbers, u, dominance_function, number_of_mutations_at_start, type_plasmid_duplication, numerical_number_of_repeats, v, lambda_max, lambda_min, SGV_Type, population_size, competition_ABR_plasmid, competition_CRISPR_plasmid, numerical_approximation_threshold)
 
 extermination_probability <- main_result_single_cell[[1]]
 
@@ -226,7 +225,7 @@ file <- paste(paste(directory, "Cell_with_one_mutated_plasmid", sep = ""), paste
 ggsave(file = file,  units="px", width=7200, height=4800, dpi = 600, bg = "white")
 
 
-# Put the two plots together:
+# Put the two plots together. The legend was later manually added. Some visuals were improved afterwards. 
 
 blank_space <- ggplot() + theme_void()
 
@@ -239,7 +238,6 @@ plot_grid(plot_A, blank_space, plot_B,
 ggsave(file = paste(paste(directory, "Fig3", ".png", sep = ""), sep = ""),  units="px", width=14400, height=4800, dpi = 600, bg = "white")
 
 
-### The legend was later manually added:
 
 
 

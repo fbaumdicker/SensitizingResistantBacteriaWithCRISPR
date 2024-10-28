@@ -5,7 +5,7 @@
 
 # OUTPUT: Probability for all possible daughter cell type combinations.
 
-cell_division_plasmid_probabilities <- function(CRISPR_type, observed_copy_numbers, type_plasmid_duplication, dominance_function, competition_AMR_plasmid, competition_CRISPR_plasmid, s_max, s_0, u) {
+cell_division_plasmid_probabilities <- function(CRISPR_type, observed_copy_numbers, type_plasmid_duplication, dominance_function, competition_AMR_plasmid, competition_CRISPR_plasmid, lambda_max, lambda_min, u) {
   
   if (CRISPR_type == "Incompatible Silencing" || CRISPR_type == "Incompatible No Effect") {
     
@@ -28,7 +28,7 @@ cell_division_plasmid_probabilities <- function(CRISPR_type, observed_copy_numbe
       
       n <- observed_copy_numbers[i] # Copy number
       
-      birth_death_parameter <- birth_death_parameters(n, s_max, CRISPR_type, dominance_function, s_0) # Birth and death parameters for the specific cell type
+      birth_death_parameter <- birth_death_parameters(n, lambda_max, CRISPR_type, dominance_function, lambda_min) # Birth and death parameters for the specific cell type
         
       for (mother_cell_CRISPR_plasmids in 1:(n+1)) {
         for (mother_cell_mutated_AMR_plasmids in c(1:(n-mother_cell_CRISPR_plasmids%%(n+1)), n+1)) {
@@ -166,7 +166,7 @@ cell_division_plasmid_probabilities <- function(CRISPR_type, observed_copy_numbe
     for (i in 1:length(observed_copy_numbers)) {
       
       n <- observed_copy_numbers[i]
-      birth_death_parameter <- birth_death_parameters(n, s_max, CRISPR_type, dominance_function, s_0)
+      birth_death_parameter <- birth_death_parameters(n, lambda_max, CRISPR_type, dominance_function, lambda_min)
       
       for (mother_cell_mutated_AMR_plasmids in 1:(n+1)) {
         
@@ -264,7 +264,7 @@ cell_division_plasmid_probabilities <- function(CRISPR_type, observed_copy_numbe
     for (i in 1:length(observed_copy_numbers)) {
       
       n <- observed_copy_numbers[i]
-      birth_death_parameter <- birth_death_parameters(n, s_max, CRISPR_type, dominance_function, s_0)
+      birth_death_parameter <- birth_death_parameters(n, lambda_max, CRISPR_type, dominance_function, lambda_min)
     
       for (mother_cell_mutated_AMR_plasmids in 1:(n+1)) {
         

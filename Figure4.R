@@ -5,13 +5,12 @@ library(ggplot2)
 library(grid)
 library(cowplot)
 
-
 ######### Parameters
 
 # General: 
 
 observed_copy_numbers <- 1:12
-type_plasmid_duplication <- "regular"
+type_plasmid_duplication <- "random"
 u <- 0
 number_of_mutations_at_start <- 1
 used_cases <- 1:3
@@ -23,18 +22,18 @@ competition_CRISPR_plasmid <- 0
 
 # Default (standard) cases
 
-s_max_default <- 0.3
+lambda_max_default <- 0.3
 v_default <- 10^-8
 s_default <- 0.1
-s_0_default <- 0.2
+lambda_min_default <- 0.2
 dominance_function_default <- "linear"
 
 # Varying parameters:
 
 v_all <- c(10^-9, 10^(-7))
 s_all <- c(0.01, 0.1, 0.9)
-s_0_all <- c(0.05, 0.8)
-s_max_all <- c(0.1, 1)
+lambda_min_all <- c(0.05, 0.8)
+lambda_max_all <- c(0.1, 1)
 dominance_function_all <- c("dominant", "linear", "recessive")
 
 
@@ -55,9 +54,9 @@ directory <- gsub(" ", "", paste(directory, "/"))
 
 # List of variables which are to be observed. THIS HAS TO BE CHANGED TO PLOT PART A, B or C
 
-variables <- c("s", "v", "s_max", "s_0", "dominance_function")
+variables <- c("s", "v", "lambda_max", "lambda_min", "dominance_function")
 variables <- c("s") # Part A
-# variables <- c("s", "v", "s_max", "s_0") # Part B
+# variables <- c("s", "v", "lambda_max", "lambda_min") # Part B
 # variables <- c("dominance_function") # Part C
 
 # Calculate point of intersection / the threshold copy number
@@ -87,11 +86,11 @@ for (variable in variables) {
   } else if (variable == "v") {
     variable_all <- v_all
     SGV_Type <- "linear"
-  } else if (variable == "s_0") {
-    variable_all <- s_0_all
+  } else if (variable == "lambda_min") {
+    variable_all <- lambda_min_all
     SGV_Type <- "linear"
-  } else if (variable == "s_max") {
-    variable_all <- s_max_all
+  } else if (variable == "lambda_max") {
+    variable_all <- lambda_max_all
     SGV_Type <- "linear"
   } else if (variable == "dominance_function") {
     variable_all <- dominance_function_all
@@ -101,10 +100,10 @@ for (variable in variables) {
     
     # Default values
     
-    s_max <- s_max_default
+    lambda_max <- lambda_max_default
     v <- v_default
     s <- s_default
-    s_0 <- s_0_default
+    lambda_min <- lambda_min_default
     dominance_function <- dominance_function_default
     
     # Variable: Overwrite certain value, which is observed
@@ -130,8 +129,8 @@ for (variable in variables) {
         title_image <- "High mutational potential"
       }
       
-    } else if (variable == "s_0") {
-      s_0 <- s_0_all[i]
+    } else if (variable == "lambda_min") {
+      lambda_min <- lambda_min_all[i]
       variable_label <- bquote(paste(phantom(), lambda [min],  " = ", .(1-variable_all[i])))
       
       if (i == 1) {
@@ -140,8 +139,8 @@ for (variable in variables) {
         title_image <- "Strong antibiotic treatment"
       }
       
-    } else if (variable == "s_max") {
-      s_max <- s_max_all[i]
+    } else if (variable == "lambda_max") {
+      lambda_max <- lambda_max_all[i]
       variable_label <- bquote(paste(phantom(), lambda [max],  " = ", .(1+variable_all[i])))
       if (i == 1) {
         title_image <- "Slow growth of mutant cells"
@@ -174,7 +173,7 @@ for (variable in variables) {
     
     # Do the calculations of the rescue probabilities:
     
-    main_result <- main(used_cases, observed_copy_numbers, u, dominance_function, number_of_mutations_at_start, type_plasmid_duplication, numerical_number_of_repeats, v, s_max, s_0, SGV_Type, population_size, competition_ABR_plasmid, competition_CRISPR_plasmid, numerical_approximation_threshold)
+    main_result <- main(used_cases, observed_copy_numbers, u, dominance_function, number_of_mutations_at_start, type_plasmid_duplication, numerical_number_of_repeats, v, lambda_max, lambda_min, SGV_Type, population_size, competition_ABR_plasmid, competition_CRISPR_plasmid, numerical_approximation_threshold)
     rescue_probability_total_de_novo <- main_result[[4]]
 
     # Prepare the data for the plots:

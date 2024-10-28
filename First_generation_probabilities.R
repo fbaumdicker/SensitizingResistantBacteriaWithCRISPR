@@ -7,7 +7,7 @@
 # OUTPUT: Probability of each cell type after CRISPR introduction.
 
 
-first_generation_probabilities <- function(number_of_mutations, n, CRISPR_type, type_plasmid_duplication, s_max, s_0, u, dominance_function, competition_CRISPR_plasmid, competition_ABR_plasmid) {
+first_generation_probabilities <- function(number_of_mutations, n, CRISPR_type, type_plasmid_duplication, lambda_max, lambda_min, u, dominance_function, competition_CRISPR_plasmid, competition_ABR_plasmid) {
   
   if (CRISPR_type == "Incompatible Silencing" || CRISPR_type == "Incompatible No Effect") {
     
@@ -17,24 +17,24 @@ first_generation_probabilities <- function(number_of_mutations, n, CRISPR_type, 
     
     # Birth parameters for the moment of CRISPR introduction:
     
-    lambda <- rep(1 + s_max, n + 1)
+    lambda <- rep(1 + lambda_max, n + 1)
     mu <- rep(1, n+1)
     
     if (CRISPR_type == "Incompatible Silencing") {
       
       if (dominance_function == "dominant") {
         
-        lambda[n+1] <- 1 - s_0
+        lambda[n+1] <- 1 - lambda_min
         
       } else if (dominance_function == "recessive") {
         
-        lambda <- rep(1 - s_0, n + 1)
+        lambda <- rep(1 - lambda_min, n + 1)
         
-        lambda[n] <- 1 + s_max
+        lambda[n] <- 1 + lambda_max
         
       } else if (dominance_function == "linear") {
         
-        lambda <- seq(from = 1 - s_0, to = 1 + s_max , length.out = n + 1) 
+        lambda <- seq(from = 1 - lambda_min, to = 1 + lambda_max , length.out = n + 1) 
         
         lambda <- c(lambda[2:(n+1)], lambda[1])
         
@@ -172,7 +172,7 @@ first_generation_probabilities <- function(number_of_mutations, n, CRISPR_type, 
     
     # Calculation of the birth and death parameters for the cell with number_of_mutations mutated AMR plasmids:
     
-    birth_death_parameter <- birth_death_parameters(n, s_max, CRISPR_type, dominance_function, s_0)
+    birth_death_parameter <- birth_death_parameters(n, lambda_max, CRISPR_type, dominance_function, lambda_min)
     
     # Calculation of the number of each plasmid type in the cell:
     

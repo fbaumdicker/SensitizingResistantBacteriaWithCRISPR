@@ -15,7 +15,6 @@ lambda_max_all <- c(1.1, 1.3, 2)
 
 plotlist <- list()
 
-
 # Calculate birth-death ratios:
 
 birth_death_ratio_dominant_lambda_1 <- lambda_min + (lambda_max_all[1]-lambda_min)*c(0, rep(1, n))
@@ -76,18 +75,11 @@ for (df in list(birth_death_ratio_recessive_df, birth_death_ratio_linear_df, bir
   plotlist[[length(plotlist)+1]] <- 
     ggplot(df, aes(x = Index, y = value)) + 
       geom_point(aes(color = series), shape = 18, size = 5, stroke = 4) +
-      #geom_hline(yintercept = 1, linetype = "dashed", color = "black", size = 1, alpha = 0.5) +
       scale_colour_manual(values = c("cyan3","darkorchid4", "grey30", "grey55", "darkorchid4", "cyan4", "cyan3", "darkorchid1"), 
                           labels = c(expression(paste(" ", italic(R)[max], " = 1.1")), expression(paste(" ", italic(R)[max], " = 1.3")), expression(paste(" ", italic(R)[max], " = 2")))) +
-                          #labels = c(expression(paste(" ", italic(R)[k], " for ", italic(R)[max], " = 1.1")), expression(paste(" ", italic(R)[k], " for ", italic(R)[max], " = 1.3")), expression(paste(" ", italic(R)[k], " for ", italic(R)[max], " = 2")))) +
-      suppressWarnings(scale_x_discrete(limits = c(0, 1:6*2))) +
-      #scale_shape_manual(values = c(16, 15, 20, 19, 17)) +
+                          suppressWarnings(scale_x_discrete(limits = c(0, 1:6*2))) +
       labs(title = title_first_column,
-           #title = expression(paste("Birth-death ratio ", italic("R"), " = ?? / ??")), #expression(paste("Birth-death ratio ", italic("R"))), 
-           #y = bquote(frac(lambda, mu)), 
-           #y = bquote(italic("R") ~ "=" ~ frac(lambda, mu)),
-           #y = expression(paste("Value of ", italic("R"))),
-           y = bquote(italic("R")[k] * " = ??"[k] * " / ??"[k]),
+           y = bquote(italic("R")[k] * " = " * lambda[k] * " / " * mu[k]),
            x = x_axis_title) +
       theme(axis.line = element_line(color = 'black'),
             plot.background = element_blank(),
@@ -108,7 +100,6 @@ for (df in list(birth_death_ratio_recessive_df, birth_death_ratio_linear_df, bir
             legend.title = element_blank(),
             legend.background = element_blank(),
             legend.box.background = element_rect(colour = "black"),
-            #legend.spacing.y = unit(2, "cm"),
             legend.key = element_rect(fill = NA, colour = NA),
             legend.key.width = unit(1.1, "cm"),
             legend.margin = margin(10, 15, 10, 15),
@@ -136,7 +127,6 @@ birth_death_parameters_bacteriostatic <- function(df) {
   df_mu <- df
   df_mu$series <- sub("lambda", "mu", df_mu$series)
   df_mu$value <- 1
-  #df <- rbind(df, subset(df_mu, series == "mu_1"))
   
   return(df)
 }
@@ -152,7 +142,6 @@ birth_death_parameters_bactericidal <- function(df) {
   df_lambda$value <- 1
   df$series <- gsub("lambda", "mu", df$series)
   df$value <- 1 / df$value
-  #df <- rbind(df, subset(df_lambda, series == "lambda_1"))
   
   return(df)
 }
@@ -173,9 +162,8 @@ for (df in list(birth_death_ratio_recessive_df, birth_death_ratio_linear_df, bir
   }
   if (df$value[4] == lambda_min) {
     plot_title = "Bacteriostatic drug"
-    #legend_position = c(0.05, 0.9)
     legend_position = "none"
-    text = bquote("??"[k] %==%  1)
+    text = bquote(mu[k] %==%  1)
     df <- rbind(
       subset(df, series == "lambda_1" & (Index %% 3 == 0 | Index == n)),
       subset(df, series == "lambda_2" & (Index %% 3 == 1 | Index == n)),
@@ -201,13 +189,8 @@ for (df in list(birth_death_ratio_recessive_df, birth_death_ratio_linear_df, bir
       scale_colour_manual(values = c("cyan3","darkorchid4", "grey30", "darkred", "darkorchid4", "cyan4", "cyan3", "darkorchid1"), 
                           labels = c(expression(paste(" ", italic("R"), " = 1.1")), expression(paste(" ", italic("R"), " = 1.3")), expression(paste(" ", italic("R"), " = 2")))) +
       suppressWarnings(scale_x_discrete(limits = c(0, 1:6*2))) +
-      #scale_shape_manual(values = c(16, 15, 20, 19, 17)) +
-      labs(title = plot_title, #expression(paste("Birth-death ratio ", italic("R"))), 
-           #y = bquote(frac(lambda, mu)), 
-           #y = bquote(italic("R") ~ "=" ~ frac(lambda, mu)),
-           #y = expression(paste("Birth-death ratio ", italic("R"), " = ?? / ??")),
-           #y = "Birth and death rates ?? and ??",
-           y = bquote("Birth rates ??"[k]),
+      labs(title = plot_title,
+           y = bquote("Birth rates " * lambda[k]),
            x = x_axis_title) +
     annotate("text", 
              x = min(df_plot$Index) + 1.5,     
@@ -239,7 +222,6 @@ for (df in list(birth_death_ratio_recessive_df, birth_death_ratio_linear_df, bir
             legend.title = element_blank(),
             legend.background = element_blank(),
             legend.box.background = element_rect(colour = "black"),
-            #legend.spacing.y = unit(2, "cm"),
             legend.key = element_rect(fill = NA, colour = NA),
             legend.key.width = unit(1.1, "cm"),
             legend.margin = margin(10, 15, 10, 15),
@@ -251,10 +233,6 @@ for (df in list(birth_death_ratio_recessive_df, birth_death_ratio_linear_df, bir
       coord_cartesian(ylim = c(min(df_plot$value)-0.05, 
                                max(df_plot$value)+0.05)) +
       guides(
-        #color = guide_legend(
-        #  override.aes = list(size = 5),
-        #  byrow = TRUE
-        #),
         color = "none"
       )
 }  
@@ -262,7 +240,6 @@ for (df in list(birth_death_ratio_recessive_df, birth_death_ratio_linear_df, bir
 
 for (df in list(birth_death_ratio_recessive_df, birth_death_ratio_linear_df, birth_death_ratio_dominant_df)) {
   if (df$value[4] == lambda_max_all[1]) {
-    #legend_position = c(0.35, 0.95)
     legend_position = "none"
     x_axis_title = expression(paste("Number of functional AMR plasmids ", italic(k)))
   } else {
@@ -276,7 +253,7 @@ for (df in list(birth_death_ratio_recessive_df, birth_death_ratio_linear_df, bir
       subset(df, series == "lambda_3" & (Index %% 3 == 2 | Index == n))
     )
     plot_title = "Bactericidal drug"
-    text = bquote("??"[k] %==%  1)
+    text = bquote(lambda[k] %==%  1)
   } else {
     plot_title = ""
     text = ""
@@ -290,7 +267,7 @@ for (df in list(birth_death_ratio_recessive_df, birth_death_ratio_linear_df, bir
     scale_shape_manual(values = c(
       "lambda_1" = 3, "lambda_2" = 3, "lambda_3" = 3,
       "mu_1" = 19, "mu_2" = 19, "mu_3" = 19
-    ), labels = c(# expression(" Birth rate"~lambda[k] %==% 1), 
+    ), labels = c(
       bquote(" Death rates " * mu[k] * " for " * italic(R)[max] ~ "=" ~ .(lambda_max_all[1])), bquote(" Death rates " * mu[k] * " for " * italic(R)[max] ~ "=" ~ .(lambda_max_all[2])), bquote(" Death rates " * mu[k] * " for " * italic(R)[max] ~ "=" ~ .(lambda_max_all[3])))
     ) +
     geom_hline(yintercept = 1, linetype = "dashed", color = "black", size = 2, alpha = 0.7) +
@@ -298,13 +275,8 @@ for (df in list(birth_death_ratio_recessive_df, birth_death_ratio_linear_df, bir
       "cyan3","darkorchid4", "grey30", "black", "darkorchid4", "cyan4", "cyan3", "darkorchid1"), 
                         labels = c(expression(paste(" ", italic("R"), " = 1.1")), expression(paste(" ", italic("R"), " = 1.3")), expression(paste(" ", italic("R"), " = 2")))) +
     suppressWarnings(scale_x_discrete(limits = c(0, 1:6*2))) +
-    #scale_shape_manual(values = c(16, 15, 20, 19, 17)) +
-    labs(title = plot_title, #expression(paste("Birth-death ratio ", italic("R"))), 
-         #y = bquote(frac(lambda, mu)), 
-         #y = bquote(italic("R") ~ "=" ~ frac(lambda, mu)),
-         #y = expression(paste("Birth-death ratio ", italic("R"), " = ?? / ??")),
-         #y = "Birth and death rates ?? and ??",
-         y = bquote("Death rates ??"[k]),
+    labs(title = plot_title,
+         y = bquote("Death rates " * mu[k]),
          x = x_axis_title) +
     annotate("text", 
                x = min(df_plot$Index) + 1.5,     
@@ -336,7 +308,6 @@ for (df in list(birth_death_ratio_recessive_df, birth_death_ratio_linear_df, bir
           legend.title = element_blank(),
           legend.background = element_blank(),
           legend.box.background = element_rect(colour = "black"),
-          #legend.spacing.y = unit(2, "cm"),
           legend.key = element_rect(fill = NA, colour = NA),
           legend.key.width = unit(1.1, "cm"),
           legend.margin = margin(10, 15, 10, 15),
@@ -348,10 +319,6 @@ for (df in list(birth_death_ratio_recessive_df, birth_death_ratio_linear_df, bir
     coord_cartesian(ylim = c(min(df_plot$value)-0.05, 
                              max(df_plot$value)+0.05)) +
     guides(
-      #color = guide_legend(
-      #  override.aes = list(size = 5),
-      #  byrow = TRUE
-      #),
       color = "none"
     )
 } 
